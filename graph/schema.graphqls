@@ -1,0 +1,39 @@
+# GraphQL schema example
+
+type Node {
+  id: ID!
+}
+
+
+type User {
+  id: ID!
+  name: String!
+  cars: [Car!]!
+}
+
+type Car {
+  model: String!
+  users: [User!]!
+}
+
+
+input UserWhereInput {
+  name: String!
+}
+
+input CreateUserInput {
+  name: String!
+  age: Int!
+}
+
+type Query {
+  users(where: UserWhereInput): [User!]!
+}
+
+type Mutation {
+  createUser(input:CreateUserInput!): ID!
+}
+
+type Subscription {
+  onUserCreated :ID!
+}

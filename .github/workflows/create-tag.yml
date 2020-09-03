@@ -13,6 +13,8 @@ jobs:
   create_tag:
     # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{steps.bump_version.outputs.new_version}}
     steps:
       - uses: actions/checkout@master
         with:

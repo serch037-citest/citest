@@ -1,8 +1,7 @@
 name: Bump version
 on:
   pull_request:
-    type:
-      - closed
+    types: [closed]
     branches:
       - master
       - staging

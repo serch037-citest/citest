@@ -10,8 +10,10 @@ env:
   IMAGE_NAME: foodworks-backend-demo
 jobs:
   create_tag:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{steps.bump_version.outputs.new_version}}
     steps:
       - uses: actions/checkout@master
         with:
@@ -40,31 +42,69 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file ./misc/Dockerfile.prod --tag $IMAGE_NAME
-
-      - name: Log into GitHub Container Registry
-      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Push image to GitHub Container Registry
+      - name: Prepare
+        id: prep
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          DOCKER_IMAGE=$IMAGE_ID
+          VERSION=$(echo "${{ needs.create_tag.outputs.new_version }}" | sed -e 's,.*/\(.*\),\1,')
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          if [ "${{ github.ref }}" = "staging" ]; then
+            VERSION=nightly
+          fi
+          TAGS="${DOCKER_IMAGE}:${VERSION}"
+          if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            TAGS="$TAGS,${DOCKER_IMAGE}:latest"
+          fi
+          echo ::set-output name=tags::${TAGS}
 
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ needs.bump_version.outputs.new_version }}" | sed -e 's,.*/\(.*\),\1,')
+      - name: List
+        run: |
+          echo ${{steps.prep.outputs.tags}}
+          echo ${{github.ref}}
 
-          # Strip "v" prefix from tag name
-          [[ "${{ needs.bump_version.outputs.new_version }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+        with:
+          version: latest
+          install: true
 
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
 
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+      - name: Build and push
+        uses: docker/build-push-action@v2-build-push
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          file: ./misc/Dockerfile.prod
+          push: true
+
+          tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      # - uses: whoan/docker-build-with-cache-action@v5
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.CR_PAT }}
+      #     dockerfile: ./misc/Dockerfile.prod
+
+      #     image_name: ${{github.repository_owner}}/foodworks-backend-demo

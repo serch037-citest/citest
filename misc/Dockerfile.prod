@@ -10,8 +10,9 @@ COPY . ./
 
 FROM base as build
 # TODO: Do we need this? // Disabled for CI
-# RUN --mount=type=cache,target=/root/.cache/go-build \
-RUN go build -o /out/server
+RUN \
+    # --mount=type=cache,target=/tmp/.buildx-cache/go-build \
+    go build -o /out/server
 
 FROM alpine AS bin-unix
 # HACKS

@@ -3,10 +3,10 @@ FROM golang:1.15.1-alpine AS base
 WORKDIR /src
 ENV GO111MODULE=on
 
-COPY go.* .
+COPY go.* ./
 RUN go mod download
 RUN go mod verify
-COPY . .
+COPY . ./
 
 FROM base as build
 # TODO: Do we need this? // Disabled for CI

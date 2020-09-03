@@ -14,7 +14,18 @@ jobs:
           # Fetches entire history, so we can analyze commits since last tag
           fetch-depth: 0
       - name: Bump version and push tag
+        id: bump_version
         uses: mathieudutour/github-tag-action@v4.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: master,staging
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{steps.bump_version.outputs.new_version}}
+          release_name: Release ${{ steps.bump_version.outputs.new_version }}
+          draft: false
+          prerelease: false

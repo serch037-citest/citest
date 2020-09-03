@@ -26,8 +26,6 @@ import (
 	"github.com/rs/cors"
 )
 
-const defaultPort = "8080"
-
 func Server(es graphql.ExecutableSchema) *handler.Server {
 	srv := handler.New(es)
 	srv.AddTransport(&transport.Websocket{

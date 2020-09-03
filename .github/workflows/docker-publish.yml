@@ -1,6 +1,6 @@
 name: Publish Docker image
 on:
-  push:
+  release:
 env:
   # TODO: Change variable to your image's name.
   IMAGE_NAME: foodworks-backend-demo

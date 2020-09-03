@@ -1,6 +1,5 @@
 name: Bump version
 on:
-  push:
   pull_request:
     types: [closed]
     branches:
@@ -96,8 +95,6 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           file: ./misc/Dockerfile.prod
-          # build-args:
-            # BUILDKIT_INLINE_CACHE=1
           push: true
 
           tags: ${{ steps.prep.outputs.tags }}

@@ -101,5 +101,5 @@ jobs:
           push: true
 
           tags: ${{ steps.prep.outputs.tags }}
-          cache-from: type=registry,src=/tmp/.buildx-cache
+          cache-from: type=registry,src=/tmp/.buildx-cache,mode=max
           cache-to: type=registry,dest=/tmp/.buildx-cache,mode=max

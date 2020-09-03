@@ -41,7 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: List
-        run: echo "${{ needs.create_tag.outputs}}"
+        run:  |
+          echo "${{ needs.create_tag.outputs}}"
+          echo "${{ needs.create_tag.outputs.new_version}}"
 
       - name: Build image
         run: docker build . --file ./misc/Dockerfile.prod --tag $IMAGE_NAME

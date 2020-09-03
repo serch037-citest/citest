@@ -1,5 +1,6 @@
 name: Bump version
 on:
+  push:
   pull_request:
     types: [closed]
     branches:
@@ -7,7 +8,7 @@ on:
       - staging
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: foodworks-backend-dem
+  IMAGE_NAME: foodworks-backend-demo
 jobs:
   create_tag:
     if: github.event.pull_request.merged == true
@@ -55,10 +56,10 @@ jobs:
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ needs.bump_version.new_version }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo "${{ needs.bump_version.outputs.new_version }}" | sed -e 's,.*/\(.*\),\1,')
 
           # Strip "v" prefix from tag name
-          [[ "${{ needs.bump_version.new_version }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [[ "${{ needs.bump_version.outputs.new_version }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest

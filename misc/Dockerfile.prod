@@ -3,15 +3,15 @@ FROM golang:1.15.1-alpine AS base
 WORKDIR /src
 ENV GO111MODULE=on
 
-COPY go.* .
+COPY go.* ./
 RUN go mod download
 RUN go mod verify
-COPY . .
+COPY . ./
 
 FROM base as build
-# Do we need this?
-RUN --mount=type=cache,target=/root/.cache/go-build \
-go build -o /out/server
+# TODO: Do we need this? // Disabled for CI
+# RUN --mount=type=cache,target=/root/.cache/go-build \
+RUN go build -o /out/server
 
 FROM alpine AS bin-unix
 # HACKS

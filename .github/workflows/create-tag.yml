@@ -64,7 +64,7 @@ jobs:
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --tag $IMAGE_NAME \
-          --file ./misc/Dockerfile.prod . \
+          --file ./misc/Dockerfile.prod ./ \
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1

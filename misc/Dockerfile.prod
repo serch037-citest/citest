@@ -10,7 +10,7 @@ COPY . ./
 
 FROM base as build
 # TODO: Do we need this? // Disabled for CI
-# RUN --mount=type=cache,target=/root/.cache/go-build \
+RUN --mount=type=cache,target=/root/.cache/go-build \
 RUN go build -o /out/server
 
 FROM alpine AS bin-unix

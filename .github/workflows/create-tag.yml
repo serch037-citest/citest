@@ -107,6 +107,6 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }m
+          password: ${{ secrets.CR_PAT }}
           dockerfile: ./misc/Dockerfile.prod
-          image_name: ${{IMAGE_NAME}}
+          image_name: ${{ IMAGE_NAME }}

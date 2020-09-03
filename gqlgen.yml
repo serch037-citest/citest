@@ -1,10 +1,10 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graph/*.graphqls
+  - schema/graphql/*.graphqls
 
 # Where should the generated server code go?
 exec:
-  filename: graph/generated/generated.go
+  filename: internal/generated/graphql/generated.go
   package: generated
 
 # Uncomment to enable federation
@@ -14,14 +14,14 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graph/model/models_gen.go
+  filename: internal/generated/graphql/model/models_gen.go
   package: model
 
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
-  dir: graph
-  package: graph
+  dir: internal/resolver
+  package: resolver
 
 # Optional: turn on use `gqlgen:"fieldName"` tags in your models
 # struct_tag: json
@@ -36,8 +36,8 @@ resolver:
 # if they match it will use them, otherwise it will generate them.
 
 autobind:
-  - "foodworks.ml/m/ent"
-  - "foodworks.ml/m/graph/model"
+  - "foodworks.ml/m/internal/generated/ent"
+  - "foodworks.ml/m/internal/generated/graphql/model"
 
 # This section declares type mapping between the GraphQL and go type systems
 #

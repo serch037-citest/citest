@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"foodworks.ml/m/ent"
-	"foodworks.ml/m/graph"
-	"foodworks.ml/m/graph/generated"
+	"foodworks.ml/m/internal/generated/ent"
+	generated "foodworks.ml/m/internal/generated/graphql"
+	"foodworks.ml/m/internal/resolver"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -96,7 +96,7 @@ func main() {
 		Debug:            true,
 	}).Handler)
 
-	srv := Server(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{Client: client, Redis: rdb}}))
+	srv := Server(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{Client: client, Redis: rdb}}))
 	appPort := os.Getenv("APPLICATION_PORT")
 
 	router.Handle("/graphql/playground", playground.Handler("GraphQL playground", "/graphql"))

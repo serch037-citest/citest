@@ -46,11 +46,9 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          DOCKER_IMAGE=name/app
           DOCKER_IMAGE=$IMAGE_ID
           VERSION=$(echo "${{ needs.create_tag.outputs.new_version }}" | sed -e 's,.*/\(.*\),\1,')
           if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -97,3 +95,5 @@ jobs:
           file: ./misc/Dockerfile.prod
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache

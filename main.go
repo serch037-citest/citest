@@ -26,8 +26,6 @@ import (
 	"github.com/rs/cors"
 )
 
-const defaultPort = "8080"
-
 func Server(es graphql.ExecutableSchema) *handler.Server {
 	srv := handler.New(es)
 	srv.AddTransport(&transport.Websocket{
@@ -57,8 +55,8 @@ func Server(es graphql.ExecutableSchema) *handler.Server {
 }
 
 // Open new db connection
-func Open(databaseUrl string) (*sql.DB, *ent.Client) {
-	db, err := sql.Open("pgx", databaseUrl)
+func Open(databaseURL string) (*sql.DB, *ent.Client) {
+	db, err := sql.Open("pgx", databaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}

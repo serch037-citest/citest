@@ -1,4 +1,4 @@
-name: Golang Lint
+name: Test Code
 on:
   pull_request:
     branches:
@@ -17,6 +17,14 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  golangci-lint:
+    name: runner / golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v1
   go:
     name: test-go
     runs-on: ubuntu-latest

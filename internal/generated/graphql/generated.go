@@ -267,7 +267,6 @@ type Node {
   id: ID!
 }
 
-
 type User {
   id: ID!
   name: String!
@@ -278,7 +277,6 @@ type Car {
   model: String!
   users: [User!]!
 }
-
 
 input UserWhereInput {
   name: String!

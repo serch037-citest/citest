@@ -1,4 +1,4 @@
-name: Bump version
+name: Build Release
 on:
   pull_request:
     types: [closed]
@@ -24,7 +24,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v4.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: master,staging
+          release_branches: master
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -34,7 +34,9 @@ jobs:
           tag_name: ${{steps.bump_version.outputs.new_version}}
           release_name: Release ${{ steps.bump_version.outputs.new_version }}
           draft: false
-          prerelease: false
+          prerelease: ${{github.ref != 'master' }}
+          body: ${{steps.changelog_generator.changelog}}
+
   push_to_github:
     needs: create_tag
     name: Push Docker image to Github Containers
@@ -53,7 +55,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
-          if [ "${{ github.ref }}" = "staging" ]; then
+          if [ "${{ github.ref }}" != "master" ]; then
             VERSION=nightly
           fi
           TAGS="${DOCKER_IMAGE}:${VERSION}"
@@ -91,7 +93,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2-build-push
+        uses: docker/build-push-action@v2
         with:
           builder: ${{ steps.buildx.outputs.name }}
           file: ./misc/Dockerfile.prod
@@ -100,11 +102,3 @@ jobs:
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      # - uses: whoan/docker-build-with-cache-action@v5
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.CR_PAT }}
-      #     dockerfile: ./misc/Dockerfile.prod
-
-      #     image_name: ${{github.repository_owner}}/foodworks-backend-demo

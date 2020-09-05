@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"testing"
 
 	"foodworks.ml/m/internal/api"
@@ -49,7 +50,15 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 
 	// Setup Docker
 	var err error
-	pool, err := dockertest.NewPool("")
+	var pool *dockertest.Pool
+	// Windows workaround: see https://github.com/ory/dockertest/issues/142
+	if runtime.GOOS == "windows" {
+		fmt.Println("Hello from Windows")
+		pool, err = dockertest.NewPool("npipe:////./pipe/docker_engine")
+	} else {
+		pool, err = dockertest.NewPool("")
+	}
+
 	if err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
@@ -66,6 +75,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
+	_ = postgresResource.Expire(60)
 
 	if err = pool.Retry(func() error {
 		var err error
@@ -85,6 +95,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
+	_ = redisResource.Expire(60)
 
 	config.RedisPass = ""
 	var ctx = context.Background()
@@ -123,6 +134,15 @@ func (suite *IntegrationTestSuite) Test_Dummy() {
 		Expect(suite.T()).
 		Status(http.StatusOK).
 		Assert(jsonpath.Len(`$.data.users`, 0)).
+		End()
+}
+
+func (suite *IntegrationTestSuite) Test_Auth_Disabled() {
+	apitest.New().
+		Handler(suite.TestSupport.Handler).
+		Post("/echoAuth").
+		Expect(suite.T()).
+		Status(http.StatusOK).
 		End()
 }
 func (suite *IntegrationTestSuite) Test_Create_Fetch() {

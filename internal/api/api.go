@@ -1,9 +1,14 @@
 package api
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
+
+	"foodworks.ml/m/internal/auth"
+	"github.com/go-chi/jwtauth"
 
 	"foodworks.ml/m/internal/generated/ent"
 	generated "foodworks.ml/m/internal/generated/graphql"
@@ -41,7 +46,6 @@ func (a *API) SetupRoutes(entClient *ent.Client, redisClient *redis.Client) {
 			return true
 		},
 	}).Handler)
-	// router.Use(jwtauth.Verifier(auth.TokenAuth))
 	// router.Use(auth.Middleware())
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
@@ -53,9 +57,20 @@ func (a *API) SetupRoutes(entClient *ent.Client, redisClient *redis.Client) {
 	})
 
 	router.Route("/", func(router chi.Router) {
-		router.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
-			log.Info().Msg("hi")
-		})
+		router.HandleFunc("/echo", EchoRequest)
+	})
+
+	router.Group(func(router chi.Router) {
+		//TODO: Verify works with unit tests
+		if flag.Lookup("test.v") == nil {
+			auth.InitAuth()
+			router.Use(jwtauth.Verifier(auth.TokenAuth))
+			router.Use(jwtauth.Authenticator)
+			fmt.Println("normal run")
+		} else {
+			fmt.Println("run under go test")
+		}
+		router.HandleFunc("/echoAuth", EchoRequest)
 	})
 	a.Router = router
 }

@@ -9,14 +9,13 @@ RUN go mod verify
 COPY . ./
 
 FROM base as build
-# TODO: Do we need this? // Disabled for CI
+# TODO: Do we need this?
 RUN \
-    # --mount=type=cache,target=/tmp/.buildx-cache/go-build \
+    --mount=type=cache,target=/tmp/.buildx-cache/go-build \
     go build -o /out/server
 
 FROM alpine AS bin-unix
 # HACKS
 EXPOSE 8080
-EXPOSE 5432
 COPY --from=build /out/server /
 CMD ["./server"]

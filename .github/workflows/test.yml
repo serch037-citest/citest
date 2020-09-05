@@ -1,10 +1,17 @@
 name: Test Code
 on:
+  push:
   pull_request:
     branches:
       - master
       - staging
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.0
   lint:
     name: lint
     runs-on: ubuntu-latest

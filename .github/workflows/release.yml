@@ -1,6 +1,5 @@
 name: Build Release
 on:
-  push:
   pull_request:
     types: [closed]
     branches:
@@ -56,7 +55,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
-          if [ "${{ github.ref }}" = "staging" ]; then
+          if [ "${{ github.ref }}" != "master" ]; then
             VERSION=nightly
           fi
           TAGS="${DOCKER_IMAGE}:${VERSION}"

@@ -91,7 +91,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2-build-push
+        uses: docker/build-push-action@v2
         with:
           builder: ${{ steps.buildx.outputs.name }}
           file: ./misc/Dockerfile.prod
@@ -100,11 +100,3 @@ jobs:
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      # - uses: whoan/docker-build-with-cache-action@v5
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.CR_PAT }}
-      #     dockerfile: ./misc/Dockerfile.prod
-
-      #     image_name: ${{github.repository_owner}}/foodworks-backend-demo

@@ -13,9 +13,9 @@ func main() {
 	platform.SetupLog()
 
 	dataStoreConfig := platform.DataStoreConfig{
-		os.Getenv("POSTGRES_URL"),
-		os.Getenv("REDIS_ADDR"),
-		os.Getenv("REDIS_PASS"),
+		DatabaseURL: os.Getenv("POSTGRES_URL"),
+		RedisAddr:   os.Getenv("REDIS_ADDR"),
+		RedisPass:   os.Getenv("REDIS_PASS"),
 	}
 
 	db, client := platform.NewEntClient(dataStoreConfig)

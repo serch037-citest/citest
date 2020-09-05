@@ -1,10 +1,12 @@
 package api
 
 import (
-	"github.com/go-chi/jwtauth"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/jwtauth"
 )
+
 func EchoRequest(w http.ResponseWriter, r *http.Request) {
 	for _, cookie := range r.Cookies() {
 		log.Println(cookie.Name)
@@ -12,7 +14,7 @@ func EchoRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	_, claims, err := jwtauth.FromContext(r.Context())
 	// Allow unauthenticated users in
-	if claims == nil || err != nil || len(claims) == 0{
+	if claims == nil || err != nil || len(claims) == 0 {
 		log.Println(err)
 		return
 	}

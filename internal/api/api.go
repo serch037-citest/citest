@@ -3,11 +3,12 @@ package api
 import (
 	"flag"
 	"fmt"
-	"foodworks.ml/m/internal/auth"
-	"github.com/go-chi/jwtauth"
 	"net/http"
 	"os"
 	"time"
+
+	"foodworks.ml/m/internal/auth"
+	"github.com/go-chi/jwtauth"
 
 	"foodworks.ml/m/internal/generated/ent"
 	generated "foodworks.ml/m/internal/generated/graphql"

@@ -75,7 +75,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
-	postgresResource.Expire(60)
+	_ = postgresResource.Expire(60)
 
 	if err = pool.Retry(func() error {
 		var err error
@@ -95,7 +95,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
-	redisResource.Expire(60)
+	_ = redisResource.Expire(60)
 
 	config.RedisPass = ""
 	var ctx = context.Background()

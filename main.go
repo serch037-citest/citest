@@ -8,6 +8,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-chi/jwtauth"
+
+	"foodworks.ml/m/auth"
 	"foodworks.ml/m/internal/generated/ent"
 	generated "foodworks.ml/m/internal/generated/graphql"
 	"foodworks.ml/m/internal/resolver"
@@ -89,16 +92,39 @@ func main() {
 	// Add CORS middleware around every request
 	// See https://github.com/rs/cors for full option listing
 	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		// AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		Debug:            true,
+		// Debug:            true,
+		AllowOriginFunc: func(origin string) bool {
+			return true
+		},
 	}).Handler)
+	router.Use(jwtauth.Verifier(auth.TokenAuth))
+	router.Use(auth.Middleware())
 
 	srv := Server(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{Client: client, Redis: rdb}}))
 	appPort := os.Getenv("APPLICATION_PORT")
 
 	router.Handle("/graphql/playground", playground.Handler("GraphQL playground", "/graphql"))
 	router.Handle("/graphql", srv)
+	router.Post("/auth", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Hi")
+		// A very simple health check.
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+	})
+	router.Post("/.api/auth", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Hi")
+		// A very simple health check.
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+	})
+	router.Post("/*", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Hi")
+		// A very simple health check.
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+	})
 
 	log.Printf("connect to http://localhost:%s/graphql/playground for GraphQL playground", appPort)
 	err := http.ListenAndServe(appPort, router)

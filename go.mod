@@ -8,6 +8,7 @@ require (
 	github.com/dgryski/trifles v0.0.0-20200830180326-aaf60a07f6a3 // indirect
 	github.com/facebook/ent v0.4.2
 	github.com/go-chi/chi v3.3.2+incompatible
+	github.com/go-chi/jwtauth v4.0.4+incompatible
 	github.com/go-redis/redis/v8 v8.0.0-beta.9
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/uuid v1.1.2 // indirect
@@ -15,6 +16,8 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/kr/text v0.2.0 // indirect
+	github.com/lestrrat/go-jwx v0.0.0-20180221005942-b7d4802280ae
+	github.com/lestrrat/go-pdebug v0.0.0-20180220043741-569c97477ae8 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/rs/cors v1.6.0
